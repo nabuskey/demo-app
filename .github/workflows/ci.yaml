@@ -19,7 +19,7 @@ jobs:
       run: |
         GITHUB_SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")
         echo "GITHUB_SHA_SHORT=${GITHUB_SHA_SHORT}" >> $GITHUB_ENV
-        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build app/main.go
+        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build main.go
         zip function-${GITHUB_SHA_SHORT}.zip main
     - name: Store
       working-directory: ./app
