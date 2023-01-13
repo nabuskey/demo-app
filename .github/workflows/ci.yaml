@@ -1,0 +1,31 @@
+name: Go
+on:
+  push:
+    branches:
+      - test
+  pull_request:
+    branches: [ $default-branch ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+    - name: Build
+      working-directory: ./app
+      run: |
+        GITHUB_SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")
+        echo "GITHUB_SHA_SHORT=${GITHUB_SHA_SHORT}" >> $GITHUB_ENV
+        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build app/main.go
+        zip function-${GITHUB_SHA_SHORT}.zip main
+    - name: Store
+      working-directory: ./app
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-west-2'
+      run: |
+        aws s3 cp ./function-${GITHUB_SHA_SHORT}.zip s3://crossplane-serverless/
