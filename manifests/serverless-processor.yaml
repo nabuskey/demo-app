@@ -16,4 +16,4 @@ spec:
   # resourceConfig:
   #   jetProviderConfigName: jet-aws-provider-config
   #   providerConfigName: aws-provider-config
-  #   region: us-west-2
+    region: us-west-2
