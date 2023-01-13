@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -32,15 +33,15 @@ func HandleRequest(ctx context.Context, event events.SQSEvent) (string, error) {
 
 	if conf.Processor {
 		for i := range event.Records {
-			name := event.Records[i].Body
-			err := process(ctx, name)
+			name := event.Records[i].MessageId
+			err := process(ctx, name, event.Records[i].Body)
 			if err != nil {
 				return "", err
 			}
-			err = sendMessage(ctx, name)
-			if err != nil {
-				return "", err
-			}
+			// err = sendMessage(ctx, name)
+			// if err != nil {
+			// 	return "", err
+			// }
 		}
 	} else {
 		for i := range event.Records {
@@ -118,11 +119,11 @@ func newConfig() error {
 	return nil
 }
 
-func process(ctx context.Context, name string) error {
+func process(ctx context.Context, name string, body string) error {
 	fmt.Printf("processing %s\n", name)
 	input := s3.PutObjectInput{
 		Bucket: &conf.DestinationBucket,
-		Body:   strings.NewReader(fmt.Sprintf("processed-%s", name)),
+		Body:   strings.NewReader(body),
 		Key:    aws.String(fmt.Sprintf("processed/%s", name)),
 	}
 	_, err := s3Client.PutObject(ctx, &input)
@@ -160,4 +161,24 @@ func printContent(ctx context.Context, name string) error {
 	}
 	fmt.Printf("Processed content %s \n", string(content))
 	return nil
+}
+
+func getObjectName(body string) (string, error) {
+	var m events.SNSEntity
+	fmt.Println(body)
+	err := json.Unmarshal([]byte(body), &m)
+	if err != nil {
+		return "", fmt.Errorf("could not unmarshal body")
+	}
+	fmt.Println(m)
+	val, ok := m.MessageAttributes["s3Key"]
+	if !ok {
+		return "", fmt.Errorf("s3Key not found in map")
+	}
+	type kv struct {
+		Type  string
+		Value string
+	}
+	k := val.(kv)
+	return k.Value, nil
 }

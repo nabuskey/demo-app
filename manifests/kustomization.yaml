@@ -1,4 +1,4 @@
 resources:
+  - serverless-processor.yaml
   - composition/definition.yaml
   - composition/object-processor.yaml
-  - serverless-processor.yaml

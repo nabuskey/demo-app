@@ -105,6 +105,7 @@ spec:
             matchLabels:
               awsblueprints.io/provider: aws-jet
               awsblueprints.io/environment: dev
+              awsblueprints.io/type: zip
           resourceConfig:
             providerConfigName: aws-provider-config
             jetProviderConfigName: jet-aws-provider-config
