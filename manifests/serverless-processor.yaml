@@ -5,15 +5,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
-  # compositionSelector:
-  #   matchLabels:
-  #     awsblueprints.io/provider: aws
-  #     awsblueprints.io/environment: dev
-  #     serverless.awsblueprints.io/app: object-processor
   bucketName: crossplane-serverless
   bucketKey: function.zip
-  # kmsKeyArn: arn:aws:kms:us-west-2:390954769804:key/dcca72ee-8239-46e8-b41b-8dbcbbd8280a
   resourceConfig:
-  #   jetProviderConfigName: jet-aws-provider-config
-  #   providerConfigName: aws-provider-config
     region: us-west-2

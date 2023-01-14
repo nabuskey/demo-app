@@ -1,10 +1,8 @@
 name: Go
 on:
   push:
-    branches:
-      - test
-  pull_request:
-    branches: [ $default-branch ]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,7 +17,7 @@ jobs:
       run: |
         GITHUB_SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")
         echo "GITHUB_SHA_SHORT=${GITHUB_SHA_SHORT}" >> $GITHUB_ENV
-        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build app/main.go
+        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build main.go
         zip function-${GITHUB_SHA_SHORT}.zip main
     - name: Store
       working-directory: ./app
@@ -29,3 +27,15 @@ jobs:
         AWS_DEFAULT_REGION: 'us-west-2'
       run: |
         aws s3 cp ./function-${GITHUB_SHA_SHORT}.zip s3://crossplane-serverless/
+    - name: update manifest
+      run: |
+        yq eval -i ".spec.bucketKey = \"crossplane-serverless/function-${GITHUB_SHA_SHORT}.zip\"" manifests/serverless-processor.yaml
+    - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: update argocd manifest
+          title: update argocd manifest 
+          body:  update argocd manifest 
+          branch: argocd-dev-manfiests
+          base: main
+          delete-branch: true
