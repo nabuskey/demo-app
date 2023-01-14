@@ -31,11 +31,11 @@ jobs:
       run: |
         yq eval -i ".spec.bucketKey = \"crossplane-serverless/function-${GITHUB_SHA_SHORT}.zip\"" manifests/serverless-processor.yaml
     - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
-        with:
-          commit-message: update argocd manifest
-          title: update argocd manifest 
-          body:  update argocd manifest 
-          branch: argocd-dev-manfiests
-          base: main
-          delete-branch: true
+      uses: peter-evans/create-pull-request@v4
+      with:
+        commit-message: update argocd manifest
+        title: update argocd manifest 
+        body:  update argocd manifest 
+        branch: argocd-dev-manfiests
+        base: main
+        delete-branch: true
