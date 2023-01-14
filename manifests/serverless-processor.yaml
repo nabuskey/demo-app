@@ -6,6 +6,6 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   bucketName: crossplane-serverless
-  bucketKey: function.zip
+  bucketKey: crossplane-serverless/function-82462ba.zip
   resourceConfig:
     region: us-west-2
