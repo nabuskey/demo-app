@@ -29,7 +29,8 @@ jobs:
         aws s3 cp ./function-${GITHUB_SHA_SHORT}.zip s3://crossplane-serverless/
     - name: update manifest
       run: |
-        yq eval -i ".spec.bucketKey = \"crossplane-serverless/function-${GITHUB_SHA_SHORT}.zip\"" manifests/serverless-processor.yaml
+        rm app/main
+        yq eval -i ".spec.bucketKey = \"function-${GITHUB_SHA_SHORT}.zip\"" manifests/serverless-processor.yaml
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
       with:
