@@ -33,6 +33,7 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
       with:
+        token: ${{ secrets.GH_TOKEN }}
         commit-message: update argocd manifest
         title: update argocd manifest 
         body:  update argocd manifest 
